@@ -1,76 +1,77 @@
 
 public class TennisGame1 implements TennisGame {
-    
-    private int m_score1 = 0;
-    private int m_score2 = 0;
-    private String player1Name;
-    private String player2Name;
+
+    public static final int FOURTY = 4;
+    private int firstPlayerScore = 0;
+    private int secondPlayerScore = 0;
+    private String firstPlayerName;
+    private String secondPlayerName;
 
     public TennisGame1(String player1Name, String player2Name) {
-        this.player1Name = player1Name;
-        this.player2Name = player2Name;
+        this.firstPlayerName = player1Name;
+        this.secondPlayerName = player2Name;
     }
 
     public void wonPoint(String playerName) {
-        if (playerName == "player1")
-            m_score1 += 1;
+        if (playerName.equals(this.firstPlayerName))
+            firstPlayerScore += 1;
         else
-            m_score2 += 1;
+            secondPlayerScore += 1;
     }
 
     public String getScore() {
-        String score = "";
-        int tempScore=0;
-        if (m_score1==m_score2)
-        {
-            switch (m_score1)
-            {
-                case 0:
-                        score = "Love-All";
-                    break;
-                case 1:
-                        score = "Fifteen-All";
-                    break;
-                case 2:
-                        score = "Thirty-All";
-                    break;
-                default:
-                        score = "Deuce";
-                    break;
-                
-            }
+        if (isATie()) {
+            return calculateScoreWhenTheSetIsTied();
         }
-        else if (m_score1>=4 || m_score2>=4)
-        {
-            int minusResult = m_score1-m_score2;
-            if (minusResult==1) score ="Advantage player1";
-            else if (minusResult ==-1) score ="Advantage player2";
-            else if (minusResult>=2) score = "Win for player1";
-            else score ="Win for player2";
+
+        if (isOverFourty()) {
+
+            return calculateScoreWhenTheMatchIsAboutToEnd();
         }
-        else
-        {
-            for (int i=1; i<3; i++)
-            {
-                if (i==1) tempScore = m_score1;
-                else { score+="-"; tempScore = m_score2;}
-                switch(tempScore)
-                {
-                    case 0:
-                        score+="Love";
-                        break;
-                    case 1:
-                        score+="Fifteen";
-                        break;
-                    case 2:
-                        score+="Thirty";
-                        break;
-                    case 3:
-                        score+="Forty";
-                        break;
-                }
-            }
+
+        return pointsToReadableScore(firstPlayerScore) + "-" + pointsToReadableScore(secondPlayerScore);
+    }
+
+    private String pointsToReadableScore(int tempScore) {
+        return switch (tempScore) {
+            case 0 -> "Love";
+            case 1 -> "Fifteen";
+            case 2 -> "Thirty";
+            default -> "Forty";
+        };
+    }
+
+    private String calculateScoreWhenTheMatchIsAboutToEnd() {
+        int minusResult = this.firstPlayerScore - this.secondPlayerScore;
+        if (minusResult ==1) {
+            return "Advantage player1";
         }
-        return score;
+
+        if (minusResult ==-1) {
+            return "Advantage player2";
+        }
+
+        if (minusResult >=2) {
+            return "Win for player1";
+        }
+
+        return "Win for player2";
+    }
+
+    private String calculateScoreWhenTheSetIsTied() {
+        return switch (firstPlayerScore) {
+            case 0 -> "Love-All";
+            case 1 -> "Fifteen-All";
+            case 2 -> "Thirty-All";
+            default -> "Deuce";
+        };
+    }
+
+    private boolean isOverFourty() {
+        return firstPlayerScore >= FOURTY || secondPlayerScore >= FOURTY;
+    }
+
+    private boolean isATie() {
+        return firstPlayerScore == secondPlayerScore;
     }
 }
